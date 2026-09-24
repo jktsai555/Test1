@@ -2,105 +2,138 @@ import streamlit as st
 from PIL import Image
 import time
 
-# ── 1. 頁面設定（頂部標題、Icon 與寬度） ──
+# ── 1. Page Configuration ──
 st.set_page_config(
-    page_title="VisionStudio AI | Streamlit Demo",
-    page_icon="✨",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Streamlit Demo on Hugging Face",
+    page_icon="✦",
+    layout="centered"
 )
 
-# ── 2. 注入精緻微 CSS：自訂主視覺漸層與陰影卡片效果 ──
+# ── 2. Editorial Minimalist Custom CSS ──
 st.markdown("""
 <style>
-    /* 標題漸層文字特效 */
-    .hero-title {
-        font-size: 2.4rem;
+    /* Google Fonts Import: Inter & Plus Jakarta Sans */
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Editorial Headline Styling */
+    .art-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #6366f1;
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 9999px;
+        margin-bottom: 12px;
+    }
+
+    .art-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 2.35rem;
         font-weight: 800;
-        background: -webkit-linear-gradient(45deg, #FF4B4B, #FF8F6B, #6C5CE7);
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        background: linear-gradient(135deg, #0f172a 0%, #334155 45%, #6366f1 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 0.2rem;
+        margin-bottom: 8px;
     }
-    .hero-subtitle {
-        color: #636e72;
-        font-size: 1.1rem;
-        margin-bottom: 1.5rem;
+
+    .art-subtitle {
+        font-size: 1.02rem;
+        color: #64748b;
+        font-weight: 400;
+        line-height: 1.6;
+        margin-bottom: 28px;
+    }
+
+    /* Polished File Uploader Container */
+    [data-testid="stFileUploader"] {
+        background: #fafafa;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        padding: 16px;
+        transition: all 0.25s ease-in-out;
+    }
+    [data-testid="stFileUploader"]:hover {
+        border-color: #6366f1;
+        background: #f8fafc;
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
+    }
+
+    /* Polished Minimalist Image Frame */
+    [data-testid="stImage"] img {
+        border-radius: 16px;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    /* Interactive Button Styling */
+    .stButton > button {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 10px 24px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #0f172a;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .stButton > button:hover {
+        border-color: #6366f1;
+        color: #6366f1;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Feedback Banner */
+    .success-pill {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-top: 14px;
+        animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ── 3. 側邊欄（Sidebar）：放置說明與控制項 ──
-with st.sidebar:
-    st.image("https://huggingface.co/front/assets/huggingface_logo-noborder.svg", width=60)
-    st.title("控制面板")
-    st.caption("ISOM5240 • Streamlit Components Showcase")
-    st.divider()
-    
-    st.markdown("### ⚙️ 系統狀態")
-    st.success("🟢 伺服器運作正常 (Online)")
-    
-    # 互動小彩蛋
-    st.divider()
-    st.markdown("### 💡 關於本工具")
-    st.info("本範例演示圖片非同步載入、動態進度條、雙欄版面排版以及即時互動元件。")
+# ── 3. App Header & Description ──
+st.markdown('<span class="art-badge">Showcase</span>', unsafe_allow_html=True)
+st.markdown('<h1 class="art-title">Streamlit Demo on Hugging Face</h1>', unsafe_allow_html=True)
+st.markdown('<p class="art-subtitle">Welcome to a demo app showcasing basic Streamlit components!</p>', unsafe_allow_html=True)
 
-# ── 4. 主畫面橫幅（Hero Section） ──
-st.markdown('<div class="hero-title">✨ VisionStudio AI Showcase</div>', unsafe_allow_html=True)
-st.markdown('<div class="hero-subtitle">探索 Streamlit 現代化介面與互動元件的極致魅力</div>', unsafe_allow_html=True)
+# ── 4. File Uploader for Image ──
+uploaded_image = st.file_uploader(
+    "Upload an image",
+    type=["jpg", "jpeg", "png"]
+)
 
-# ── 5. 雙欄排版佈局（Columns） ──
-col_upload, col_preview = st.columns([1, 1], gap="large")
+# ── 5. Image Rendering with Custom Spinner ──
+if uploaded_image is not None:
+    with st.spinner("Processing visual render..."):
+        time.sleep(1)  # Simulate a delay
+        image = Image.open(uploaded_image)
+        st.image(image, caption="Uploaded Image", use_container_width=True)
 
-with col_upload:
-    with st.container(border=True):
-        st.subheader("📤 上傳區塊")
-        st.write("支援 JPG, JPEG, PNG 格式的圖片檔案。")
-        
-        uploaded_image = st.file_uploader(
-            "選擇或拖曳圖片至此：",
-            type=["jpg", "jpeg", "png"],
-            help="請上傳清晰的日常或藝術圖片進行展示"
-        )
-        
-        # 互動按鈕與回饋區
-        st.divider()
-        st.subheader("🎯 互動觸發")
-        st.caption("點擊下方按鈕觸發即時事件回饋：")
-        
-        if st.button("點擊解鎖驚喜 🚀", use_container_width=True, type="primary"):
-            st.balloons()  # 繽紛氣球動畫！
-            st.toast("🎉 成功點擊按鈕！事件已觸發！", icon="🎈")
-            st.success("✨ **恭喜！你成功觸發了按鈕事件！**")
+st.write("")  # Whitespace balance
 
-with col_preview:
-    with st.container(border=True):
-        st.subheader("🖼️ 圖片即時預覽")
-        
-        if uploaded_image is not None:
-            # 模擬進度條與微載入
-            progress_bar = st.progress(0, text="圖片解碼中...")
-            for percent in range(1, 101, 25):
-                time.sleep(0.08)
-                progress_bar.progress(percent, text=f"正在載入核心檔案... {percent}%")
-            progress_bar.empty()  # 載入完成清除進度條
-
-            image = Image.open(uploaded_image)
-            
-            # 圖片卡片展示
-            st.image(image, caption="📸 上傳影像即時渲染視圖", use_container_width=True)
-            
-            # 附加資訊面板 (Metrics)
-            st.divider()
-            m_col1, m_col2 = st.columns(2)
-            with m_col1:
-                st.metric(label="圖片寬高 (Dimensions)", value=f"{image.size[0]} × {image.size[1]} px")
-            with m_col2:
-                st.metric(label="色彩模式 (Format)", value=image.format or "RGB")
-        else:
-            # 留白空狀態引導
-            st.info("👈 尚未收到圖片，請在左側面板上傳檔案以預覽。")
-
-# ── 6. 頁尾資訊 ──
-st.divider()
-st.caption("© 2026 VisionStudio Demo • Built with Streamlit & Python")
+# ── 6. Button Interaction ──
+if st.button("Click Me"):
+    st.markdown('<div class="success-pill">🎉 You clicked the button!</div>', unsafe_allow_html=True)
